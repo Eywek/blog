@@ -1,19 +1,19 @@
-name: Your New Jekyll Site
-description: Blogging about stuffs
-meta_description: "Your New Jekyll Site, Blogging about stuffs"
+name: "Eywek's blog"
+description: Blogging about tech and engineering stuffs
+meta_description: "Blogging about tech and engineering stuffs"
 
 markdown: kramdown
 highlighter: rouge
 logo: false
 paginate: 15
-baseurl: /kasper
-domain_name: "http://yourblog-domain.com"
-google_analytics: "UA-XXXXXXXX-X"
+baseurl: /blog
+domain_name: "https://eywek.github.io"
+# google_analytics: "UA-XXXXXXXX-X"
 plugins: [jekyll-paginate]
 
 # Details for the RSS feed generator
 url: ""
-author: "Your Name"
+author: "Valentin `Eywek` Touffet"
 
 # Disqus config
-disqus-shortname: ""
+# disqus-shortname: ""
