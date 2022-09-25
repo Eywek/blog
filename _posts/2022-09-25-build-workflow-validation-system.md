@@ -2,7 +2,6 @@
 layout: post
 title:  "Build a workflow validation system"
 date:   2022-09-25
-categories: Typescript Workflow Engineering
 ---
 
 I'm currently working as a Lead core engineer at [Reelevant](https://reelevant.com), we're building a martech product which help companies to generate individualized contents at scale.
