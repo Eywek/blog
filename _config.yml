@@ -1,6 +1,5 @@
 name: "Eywek's blog"
 description: Blogging about tech and engineering stuffs
-cover: "cover.jpg"
 meta_description: "Blogging about tech and engineering stuffs"
 
 markdown: kramdown
@@ -14,7 +13,7 @@ plugins: [jekyll-paginate]
 
 # Details for the RSS feed generator
 url: ""
-author: "Valentin `Eywek` Touffet"
+author: "Valentin `Eywek`"
 
 # Disqus config
 # disqus-shortname: ""
