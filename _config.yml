@@ -1,5 +1,6 @@
 name: "Eywek's blog"
 description: Blogging about tech and engineering stuffs
+cover: "cover.jpg"
 meta_description: "Blogging about tech and engineering stuffs"
 
 markdown: kramdown
