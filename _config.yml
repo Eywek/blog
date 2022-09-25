@@ -1,6 +1,6 @@
-name: "Eywek's blog"
-description: Blogging about tech and engineering stuffs
-meta_description: "Blogging about tech and engineering stuffs"
+name: "Eywek's personal blog"
+description: "Blogging about some tech stuff I've done"
+meta_description: "Blogging about some tech stuff I've done"
 
 markdown: kramdown
 highlighter: rouge
