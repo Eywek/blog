@@ -23,7 +23,7 @@ Our workflow engine:
 - is able to do condition on data (do we found a seen product? is the client seeing the content between 23 sept. and 26 sept.?)
 - is able to use data to generate a content (show the latest seen product image)
 
-## What we wanted
+## Our requirements
 
 Since our workflow engine is able to process some complex logic, we want to help our customers to build easily a workflow with a Workflow builder.
 
