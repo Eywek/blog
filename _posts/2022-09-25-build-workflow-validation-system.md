@@ -6,9 +6,11 @@ date:   2022-09-25
 
 I'm currently working as a Lead core engineer at [Reelevant](https://reelevant.com), we're building a martech product which help companies to generate individualized contents at scale.
 
-Our customers have a large amount of data on their clients (tracking website navigation, shop purchases, recommandations...), we store those data for them and allow them to, based on data, generate the right and unique content for each client.
+Our customers have a large amount of data on their clients (tracking website navigation, shop purchases, recommandations…), we store those data for them and allow them to, based on data, generate the right and unique content for each client.
 
-To generate and show the right content, our customers needs to be able to build a workflow with their business logic, based on their data. And each data source is unique for each of our customer, each data source have his own fields and filter, everything must be dynamic.  
+Those data are unique for each customer we have, which add complexity to using them, each source have is own fields, his own available filters… everything must be dynamic.
+
+The solution, to generate and show the right content, is to provide a workflow builder where our customers could build a complex workflow with their business logic, based on their data.
 
 ## Our workflow system
 
@@ -25,7 +27,7 @@ Our workflow engine:
 
 ## Our requirements
 
-Since our workflow engine is able to process some complex logic, we want to help our customers to build easily a workflow with a Workflow builder.
+Since building a workflow could be quite technical and hard without right informations on the used data, our Workflow builder had to guide our customers and provide them useful insights on invalid behavior or on data structure.
 
 To be as flexible as possible and build strictly valid workflow we wanted to have strict definition of our vertices (we call them node), what configuration do they need, which output do they produce if they are data nodes...
 
@@ -37,7 +39,7 @@ At Reelevant, our main language is Typescript, we use it in our backend and in o
 
 The main idea was to be able to define our nodes with Typescript, since Typescript doesn't help us to perform validation at runtime we've searched a runtime type system based on Typescript. And we've found [io-ts](https://github.com/gcanti/io-ts) which is quite used and was fulfilling our requirements (now there is also [zod](https://github.com/colinhacks/zod) which wasn't ready/known when we first started the project in early 2020). 
 
-With io-ts we could easily define our node configurations and output and easily perform runtime validation on it. 
+With io-ts we could easily define each node configuration that could be used to perform runtime validation.
 
 ```ts
 import * as t from 'io-ts'
@@ -60,7 +62,8 @@ Doing static validation is a first step in ensuring we have a valid workflow. Th
 
 For example, with a given data node, if the user configured a specific data source, we want to ensure every filter he's configured are valid for this specific data source.
 
-The way we do that is to dynamically generate an io-ts type based on the current configuration of the node, it allow us to leverage io-ts validation (our validation system is the same whenever we're validating statically the workflow or based on the configuration).
+The way we do that is to dynamically generate an io-ts type based on the current configuration of the node.
+And since only some of our nodes have dynamic options type, that’s why using io-ts type for both is great, because it allows us to rely on the same validation mechanism (through io-ts) whenever the node options type is dynamic or not
 
 ```ts
 import * as t from 'io-ts'
@@ -124,9 +127,28 @@ export class MyDataNode extends DataNode {
 
 This way we have an option type and an output type. So when a user use a data node for another data node, we can compare both io-ts type and see if they match (i.e. if the filter value is expected to be a `t.string`, the property from the output of the dependency should be compatible with `t.string`, so it could be `t.string` or `t.literal(<string>)`).
 
-The only issue is that io-ts don't provide a way to check if 2 type are compatible with each other. So we've built a `TypeManager` util to deal with io-ts type and perform validation on it.
+io-ts doesn’t provide a way to compare two io-ts type so we’ve built our own compare utility on top of io-ts types, using io-ts internals. Each io-ts type instance contain a `tag` property which identify the type. 
+This information allows us to retrieve type definition and compare it with another type definition.
 
-For example, we have a method called `getPropertyType` which takes an io-ts type and a property path. The method will try to get the property type from the io-ts type:
+```ts
+function areCompatibleTypes (expectedType: t.Mixed, foundType: t.Mixed): boolean {
+  if (expectedType._tag === 'UnionType') {
+    return expectedType.types.some(type => areCompatibleTypes(type, foundType))
+  }
+  if (foundType._tag === 'UnionType') {
+    return foundType.types.every(type => areCompatibleTypes(expectedType, type))
+  }
+  if (expectedType._tag === 'StringType') {
+    return foundType._tag === 'String' || (foundType._tag === 'LiteralType' && typeof foundType.value === 'string')
+  }
+  ...
+  return false
+}
+```
+
+The last part is being able to compare some properties of a type and not the full type itself.
+For example, when we configure a node, we want to be able to validate the property we’re setting without validating the whole node which could be not entirely configured.
+So we’ve built an util to retrieve the io-ts type of a property (even nested properties) using io-ts internals.
 
 ```ts
 function getPropertyType (type: t.Mixed, path: string[]): t.Mixed | null {
@@ -167,26 +189,10 @@ function getPropertyType (type: t.Mixed, path: string[]): t.Mixed | null {
 }
 ```
 
-And when we're able to retrieve a property type, we can use our `areCompatibleTypes` method to check if two type are compatible:
-
-```ts
-function areCompatibleTypes (expectedType: t.Mixed, foundType: t.Mixed): boolean {
-  if (expectedType._tag === 'UnionType') {
-    return expectedType.types.some(type => areCompatibleTypes(type, foundType))
-  }
-  if (foundType._tag === 'UnionType') {
-    return foundType.types.every(type => areCompatibleTypes(expectedType, type))
-  }
-  if (expectedType._tag === 'StringType') {
-    return foundType._tag === 'String' || (foundType._tag === 'LiteralType' && typeof foundType.value === 'string')
-  }
-  ...
-  return false
-}
-```
+We were now able to validate each workflow node options, and if a workflow node depends on one another, validate that the dependency is valid (the output type of the dependency must be compatible with the option type of the dependent). 
 
 ## Conclusion
 
 Defining everything with io-ts allows us to perform strict and dynamic validation on our workflows, we're able to dynamically create io-ts type, assert two types are compatible or not and provide useful errors to our customers if they are doing something wrong.
 
-Of course this whole type-checking system also allow us to forbid invalid configurations by showing to our customers only compatible configurations (i.e. we don't show an incompatible data source for a given filter).
+Additionally since we’re able to detect compatible node for a given node, we can hide uncompatible ones to our customers and much more (e.g. errors detection, automatic configuration…) leading to a better UX for them. 
