@@ -4,26 +4,26 @@ title:  "Build a workflow validation system"
 date:   2022-09-25
 ---
 
-I'm currently working as a Lead core engineer at [Reelevant](https://reelevant.com), we're building a martech product which help companies to generate individualized contents at scale.
+I'm currently working as a Lead core engineer at [Reelevant](https://reelevant.com), we're building a mar-tech product which help companies to generate individualized contents at scale.
 
-Our customers have a large amount of data on their clients (tracking website navigation, shop purchases, recommandations…), we store those data for them and allow them to, based on data, generate the right and unique content for each client.
+Our customers have a large amount of data on their clients (tracking website navigation, shop purchases, recommendations…), we store those data for them and allow them to, based on data, generate the right and unique content for each client.
 
-Those data are unique for each customer we have, which add complexity to using them, each source have is own fields, his own available filters… everything must be dynamic.
+Those data are unique for each customer we have, which add complexity to using them, each source has is own fields, his own available filters… everything must be dynamic.
 
-The solution, to generate and show the right content, is to provide a workflow builder where our customers could build a complex workflow with their business logic, based on their data.
+To help them generate and show the right content, we provide a workflow builder where they can build a complex workflow with their business logic, based on their data.
 
 ## Our workflow system
 
-We've designed a workflow engine that run workflow defined by a [Directed Acyclic Graph](https://en.wikipedia.org/wiki/Directed_acyclic_graph) where we have 3 different type of [vertices](https://en.wikipedia.org/wiki/Vertex_(graph_theory)):
+We've designed a workflow engine that is running workflows defined by a [Directed Acyclic Graph](https://en.wikipedia.org/wiki/Directed_acyclic_graph) where we have 3 different type of [vertices](https://en.wikipedia.org/wiki/Vertex_(graph_theory)):
 - Data vertices in charge of retrieving data from our customer configured data sources
-- Logic vertices in charge of splitting the workflow in multiple branch based on business logic (i.e. conditions on data, A/B testing...)
+- Logic vertices in charge of splitting the workflow in multiple branch based on business logic (e.g. conditions on data, A/B testing...)
 - Output vertices in charge of generating a content
 
 Our workflow engine:
-- is able to retrieve data with business logic defined by the customer (i.e. some filters on a specific category, get seen products...)
-- is able to use data to retrieve more data (i.e. get a product recommendation based on the latest category seen by the client),
-- is able to do condition on data (do we found a seen product? is the client seeing the content between 23 sept. and 26 sept.?)
-- is able to use data to generate a content (show the latest seen product image)
+- is able to retrieve data with business logic defined by the customer (e.g. some filters on a specific category, get seen products...)
+- is able to use data to retrieve more data (e.g. get a product recommendation based on the latest category seen by the client),
+- is able to do condition on data (e.g. do we found a seen product? is the client seeing the content between 23 sept. and 26 sept.?)
+- is able to use data to generate a content (e.g. show the latest seen product image)
 
 ## Our requirements
 
@@ -35,9 +35,9 @@ Having a strict definition for our nodes is allowing us to perform validation wh
 
 ## 1st step: Using Typescript
 
-At Reelevant, our main language is Typescript, we use it in our backend and in our React frontend. It allow us to easily code share utils and typings and everyone in the tech team is able to work in both codebases.
+At Reelevant, our main language is Typescript, we use it in our backend and in our React frontend. It allows us to easily code share utils and typings and everyone in the tech team is able to work in both codebases.
 
-The main idea was to be able to define our nodes with Typescript, since Typescript doesn't help us to perform validation at runtime we've searched a runtime type system based on Typescript. And we've found [io-ts](https://github.com/gcanti/io-ts) which is quite used and was fulfilling our requirements (now there is also [zod](https://github.com/colinhacks/zod) which wasn't ready/known when we first started the project in early 2020). 
+The main idea was to be able to define our nodes with Typescript, since Typescript doesn't help us perform validation at runtime we've searched a runtime type system based on Typescript. And we've found [io-ts](https://github.com/gcanti/io-ts) which is quite used and was fulfilling our requirements (now there is also [zod](https://github.com/colinhacks/zod) which wasn't ready/known when we first started the project in early 2020). 
 
 With io-ts we could easily define each node configuration that could be used to perform runtime validation.
 
@@ -62,8 +62,8 @@ Doing static validation is a first step in ensuring we have a valid workflow. Th
 
 For example, with a given data node, if the user configured a specific data source, we want to ensure every filter he's configured are valid for this specific data source.
 
-The way we do that is to dynamically generate an io-ts type based on the current configuration of the node.
-And since only some of our nodes have dynamic options type, that’s why using io-ts type for both is great, because it allows us to rely on the same validation mechanism (through io-ts) whenever the node options type is dynamic or not
+The way we do that, is to dynamically generate an io-ts type based on the current configuration of the node.
+And since only some of our nodes have dynamic options type, that’s why using io-ts type for both is great because it allows us to rely on the same validation mechanism (through io-ts) whenever the node options type is dynamic or not
 
 ```ts
 import * as t from 'io-ts'
@@ -98,7 +98,7 @@ export class MyDataNode extends DataNode {
 
 ## 3rd step: Type-checking workflow
 
-The next and the final step is to ensure that if a node is using another node (i.e. a data node using another one to retrieve some data), the used output is compatible with the expected config.
+The next and the final step is to ensure that if a node is using another node (e.g. a data node using another one to retrieve some data), the used output is compatible with the expected config.
 
 For this step, we do the same as for the config, we define our output type in node definition:
 
@@ -125,7 +125,7 @@ export class MyDataNode extends DataNode {
 }
 ```
 
-This way we have an option type and an output type. So when a user use a data node for another data node, we can compare both io-ts type and see if they match (i.e. if the filter value is expected to be a `t.string`, the property from the output of the dependency should be compatible with `t.string`, so it could be `t.string` or `t.literal(<string>)`).
+This way we have an option type and an output type. So when a user use a data node for another data node, we can compare both io-ts type and see if they match (e.g. if the filter value is expected to be a `t.string`, the property from the output of the dependency should be compatible with `t.string`, so it could be `t.string` or `t.literal(<string>)`).
 
 io-ts doesn’t provide a way to compare two io-ts type so we’ve built our own compare utility on top of io-ts types, using io-ts internals. Each io-ts type instance contain a `tag` property which identify the type. 
 This information allows us to retrieve type definition and compare it with another type definition.
@@ -189,7 +189,7 @@ function getPropertyType (type: t.Mixed, path: string[]): t.Mixed | null {
 }
 ```
 
-We were now able to validate each workflow node options, and if a workflow node depends on one another, validate that the dependency is valid (the output type of the dependency must be compatible with the option type of the dependent). 
+We were now able to validate each workflow node options, and if a workflow node depends on one another, validate that the dependency is valid (the output type of the dependency must be compatible with the option type of the dependant). 
 
 ## Conclusion
 
