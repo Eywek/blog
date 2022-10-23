@@ -6,15 +6,13 @@ date:   2022-10-21
 
 I'm currently working as a Lead core engineer at [Reelevant](https://reelevant.com), we're building a martech product which help companies to generate individualized contents at scale.
 
-We're using [TypeScript](https://www.typescriptlang.org/) as a main language in both ours backend and frontend codebase. 
+We're using [TypeScript](https://www.typescriptlang.org/) as a main language in both ours backend and frontend codebase. Each codebase was in a separate Github repository.
 
-## Our requirements
+Few years ago, for our frontend engineers to use a newly created or updated API endpoint, they needed to look into the backend codebase to search for API types and endpoint. 
 
-We wanted to be able to use TypeScript types defined in our backend APIs in our frontend application but our backend and frontend aren't in the same Github repository. 
+At this time, it wasn't a great developer experience and we wanted to simplify this process by exposing HTTP clients to our frontend engineers where they could simply call methods with right TypeScript types.
 
-We also wanted to be able to expose our APIs routes easily to frontend developers through an HTTP client, removing the need to search for an endpoint definition in our backend code base.
-
-And the last nice to have we wanted to setup is exposing a documentation to our customers' developers ([example](https://reelevant.readme.io/reference/list-invitation)).
+Additionally, at the same time, one of our business requirement was to expose our public API endpoints to our customers. We needed to setup an up to date documentation. Writing it ourself and keeping up to date wasn't really something we've considered since we didn't have much resources and we needed to move fast.
 
 ## OpenAPI
 
