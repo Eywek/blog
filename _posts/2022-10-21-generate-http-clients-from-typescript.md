@@ -44,7 +44,7 @@ Currently our setup was building a Docker image -for each service- when a commit
 
 Our purpose here was to use this current setup as much as possible. And that's what we've done by adding the built OpenAPI specification file to each our Docker image. 
 
-This way, we're able to retrieve an OpenAPI file for each service version easily. 
+This way, we were able to retrieve an OpenAPI file for each service version easily. 
 
 We also had setup a `openapi-clients` repository where we have yaml files defining which docker image we use to retrieve the OpenAPI file for each client:
 ```yaml
