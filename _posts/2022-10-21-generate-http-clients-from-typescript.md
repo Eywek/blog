@@ -40,18 +40,13 @@ To generate those clients, we use the [oatyp](https://github.com/eywek/oatyp) li
 
 The last step was to automate everything, when someone commit on our backend codebase, we should create a new version of our OpenAPI client. 
 
-First, when we commit on our backend codebase, a Docker image is built with built service, the Docker image also contains the OpenAPI specification file which was generated during the image build. 
+Currently our setup was building a Docker image -for each service- when a commit is landed on master. And we had a service called `release-observer` which receive webhooks when a commit is issued in our Github organization and is configured to commit to another repository. We primarily use this service to deploy our services to our Kubernetes cluster (when a commit on master is done, the service update Kubernetes manifests to pull the new service image).
 
-To generate automatically clients for each commit, we need to get the OpenAPI specification file from the Docker image, and use [oatyp](https://github.com/eywek/oatyp) to build the HTTP client, and then publish it to NPM. 
+Our purpose here was to use this current setup as much as possible. And that's what we've done by adding the built OpenAPI specification file to each our Docker image. 
 
-Our workflow is the following:
+This way, we're able to retrieve an OpenAPI file for each service version easily. 
 
-![](https://blog.eywek.fr/assets/images/openapi-clients-schema.png)
-
-We have a service called `release-observer` which receive webhooks when a commit is issued in our Github organization and is configured to commit to another repository. We primarily use this service to deploy our services to our Kubernetes cluster (when a commit on master is done, the service update Kubernetes manifests to pull the new service image).
-
-We have a `openapi-clients` repository where we have yaml files defining which docker image we use to retrieve the OpenAPI file for each client:
-
+We also had setup a `openapi-clients` repository where we have yaml files defining which docker image we use to retrieve the OpenAPI file for each client:
 ```yaml
 # openapi-clients/packages/<service name>/ref.yaml
 image:
@@ -61,7 +56,13 @@ openapi:
 	path: /path/to/spec/in/image/openapi.yaml
 ```
 
-When we commit on our backend codebase, the release-observer pick the commit hash and commit in our `openapi-clients`  to update the `image.tag`, which triggers a Github Actions which generate the HTTP client and publish it to NPM.
+Updating this yaml file is triggering a GitHub Action which retrieve the OpenAPI file in the docker image, build the HTTP client and publish it to NPM.
+
+And then, we've configured our `release-observer` service to update this yaml file when a commit is landed on master.
+
+Which leads to the following workflow:
+
+![](../assets/images/openapi-clients-schema.png)
 
 ## Conclusion
 
