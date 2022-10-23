@@ -50,10 +50,10 @@ We also had setup a `openapi-clients` repository where we have yaml files defini
 ```yaml
 # openapi-clients/packages/<service name>/ref.yaml
 image:
-	repository: eu.gcr.io/<docker image path>
-	tag: 9b8c3cba1b4f60ea265c47fa5ef043bc4ea97030
+  repository: eu.gcr.io/<docker image path>
+  tag: 9b8c3cba1b4f60ea265c47fa5ef043bc4ea97030
 openapi:
-	path: /path/to/spec/in/image/openapi.yaml
+  path: /path/to/spec/in/image/openapi.yaml
 ```
 
 Updating this yaml file is triggering a GitHub Action which retrieve the OpenAPI file in the docker image, build the HTTP client and publish it to NPM.
