@@ -16,11 +16,11 @@ Additionally, at the same time, one of our business requirement was to expose ou
 
 ## OpenAPI
 
-The easier way to generate HTTP clients our documentation from API definition is using the [OpenAPI specification](https://swagger.io/specification/) (previously called Swagger). 
+The easier and most common way to generate HTTP clients or documentation from an API definition is using the [OpenAPI specification](https://swagger.io/specification/) (previously called Swagger). 
 
 The idea is to create an OpenAPI specification file where we can define every HTTP endpoint with their configuration (method, authentification, body, query parameters...) and responses (http codes, body...). Then, when the file is created, you can use it with many tools to generate HTTP client, documentation or even generate code.
 
-The main issue with OpenAPI files is the maintenance, if you're creating a OpenAPI specification by hand, it means you must think to update it each time you update your API code. And it also means needing to define twice your entities types (openapi spec + typescript). 
+The main issue we had with OpenAPI files is the maintenance, if you're creating a OpenAPI specification by hand, it means you must think to update it each time you update your API code. And it also means needing to define twice your entities types (openapi spec + typescript). 
 
 ## Generating OpenAPI from Typescript
 
