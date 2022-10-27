@@ -62,7 +62,7 @@ And then, we've configured our `release-observer` service to update this yaml fi
 
 Which leads to the following workflow:
 
-![](../assets/images/openapi-clients-schema.png)
+![](/assets/images/openapi-clients-schema.png)
 
 ## Conclusion
 
